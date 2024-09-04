@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "slider.h": "c",
+        "mathfunc.h": "c",
+        "stdlib.h": "c",
+        "canqueue.h": "c",
+        "freertos.h": "c",
+        "task.h": "c",
+        "cmsis_os.h": "c",
+        "zdrive.h": "c",
+        "stdbool.h": "c",
+        "chassis.h": "c",
+        "vescmotor.h": "c"
+    }
+}
