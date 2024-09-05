@@ -285,7 +285,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   if(htim->Instance == TIM2)
   { 
     
-    CAN_Queue_Dequeue(&Answer_queue,CAN2);
+    CAN_Queue_Dequeue(&Answer_queue,CAN1);
 
     #if USE_VESC_MOTOR
       CAN_Queue_Dequeue(&Vesc_queue,CAN2);//0.1ms发一�?????

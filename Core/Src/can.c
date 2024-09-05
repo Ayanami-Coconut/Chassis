@@ -64,7 +64,7 @@ void MX_CAN1_Init(void)
   sFilterConfig.FilterActivation = CAN_FILTER_ENABLE;
   sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST;
   sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT;
-  sFilterConfig.FilterBank = 1;
+  sFilterConfig.FilterBank = 4;
 	sFilterConfig.FilterFIFOAssignment = CAN_FILTER_FIFO0;
   sFilterConfig.FilterIdHigh = 0x201 << 5;
   sFilterConfig.FilterIdLow = 0x202 << 5;
@@ -77,7 +77,7 @@ void MX_CAN1_Init(void)
   sFilterConfig.FilterActivation = CAN_FILTER_ENABLE;
   sFilterConfig.FilterMode = CAN_FILTERMODE_IDLIST;
   sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT;
-  sFilterConfig.FilterBank = 2;
+  sFilterConfig.FilterBank = 5;
   sFilterConfig.FilterFIFOAssignment = CAN_FilterFIFO0;
   sFilterConfig.FilterIdHigh = 0x205 <<5;
   sFilterConfig.FilterIdLow = 0x206 <<5;
@@ -86,6 +86,20 @@ void MX_CAN1_Init(void)
 	sFilterConfig.SlaveStartFilterBank = 14;
   if(HAL_CAN_ConfigFilter(&hcan1,&sFilterConfig)!=HAL_OK)
     Error_Handler();
+  //主机通讯
+	sFilterConfig.FilterActivation = CAN_FILTER_ENABLE;
+  sFilterConfig.FilterBank = 6;
+  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+  sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+  sFilterConfig.FilterFIFOAssignment = CAN_FilterFIFO0;
+  sFilterConfig.FilterIdHigh = ((CAN_MASTER_ID << 3) & 0xffff0000) >> 16;
+  sFilterConfig.FilterIdLow = ((CAN_MASTER_ID << 3) & 0xffff);
+  sFilterConfig.FilterMaskIdHigh = (CAN_MASTER_MASK << 3) >> 16;
+  sFilterConfig.FilterMaskIdLow = ((CAN_MASTER_MASK << 3)) & 0xffff;
+  sFilterConfig.SlaveStartFilterBank = 14;
+  if(HAL_CAN_ConfigFilter(&hcan1,&sFilterConfig)!=HAL_OK)
+    Error_Handler();
+
   if(HAL_CAN_Start(&hcan1)!= HAL_OK ) 
     Error_Handler();
   if(HAL_CAN_ActivateNotification(&hcan1,CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
@@ -176,19 +190,7 @@ void MX_CAN2_Init(void)
   if(HAL_CAN_ConfigFilter(&hcan2,&sFilterConfig)!=HAL_OK)
     Error_Handler();
 
-	//主机通讯
-	sFilterConfig.FilterActivation = CAN_FILTER_ENABLE;
-  sFilterConfig.FilterBank = 24;
-  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
-  sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-  sFilterConfig.FilterFIFOAssignment = CAN_FilterFIFO0;
-  sFilterConfig.FilterIdHigh = ((CAN_MASTER_ID << 3) & 0xffff0000) >> 16;
-  sFilterConfig.FilterIdLow = ((CAN_MASTER_ID << 3) & 0xffff);
-  sFilterConfig.FilterMaskIdHigh = (CAN_MASTER_MASK << 3) >> 16;
-  sFilterConfig.FilterMaskIdLow = ((CAN_MASTER_MASK << 3)) & 0xffff;
-  sFilterConfig.SlaveStartFilterBank = 14;
-  if(HAL_CAN_ConfigFilter(&hcan2,&sFilterConfig)!=HAL_OK)
-    Error_Handler();
+	
 	
   if(HAL_CAN_Start(&hcan2)!= HAL_OK ) 
     Error_Handler();
@@ -336,14 +338,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     if(hcan->Instance == CAN1)
     {
         HAL_CAN_GetRxMessage(hcan,CAN_RX_FIFO0,&Rxheader,Rxdata);
-        DJReceiveData_CAN1(Rxheader,Rxdata);
-    }
-    else if(hcan->Instance == CAN2)
-    {
-        HAL_CAN_GetRxMessage(hcan,CAN_RX_FIFO0,&Rxheader,Rxdata);
+        //DJReceiveData_CAN1(Rxheader,Rxdata);
         ChassisFunc(Rxheader,Rxdata);
-    }
-    
+    }    
 }
 void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {

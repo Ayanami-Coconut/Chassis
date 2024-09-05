@@ -52,7 +52,18 @@ void CAN_Queue_Dequeue(CAN_Queue *queue,CAN_TypeDef *CANx) {
 			queue->head %= Queue_MAXN;
 			HAL_CAN_AddTxMessage(&hcan2,&Txheader,Tx_data,&pTxmailbox);
     }
-
+    else if(CANx == CAN1)
+    {
+			Txheader.IDE = queue->IDE;
+      if(queue->IDE == CAN_ID_EXT)
+        Txheader.ExtId = queue->messages[queue->head].id;
+      Txheader.DLC = queue->messages[queue->head].DLC;
+      Txheader.RTR = CAN_RTR_DATA;
+      memcpy(Tx_data,queue->messages[queue->head].data,sizeof(uint8_t)*Txheader.DLC);
+			queue->head++;
+			queue->head %= Queue_MAXN;
+			HAL_CAN_AddTxMessage(&hcan1,&Txheader,Tx_data,&pTxmailbox);
+    }
 }
 // bool CAN_Queue_Front(CAN_Queue *queue, CAN_Message *message) {
 //     if (CAN_Queue_Isempty(queue))
